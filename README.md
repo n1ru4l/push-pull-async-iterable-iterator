@@ -65,11 +65,29 @@ import {
   applyAsyncIterableIteratorToSink
 } from "@n1ru4l/push-pull-async-iterable-iterator";
 
+const iterator = new PushPullAsyncIterableIterator();
+
 const observable = new Observable(sink => {
-  const iterator = new PushPullAsyncIterableIterator();
   const dispose = applyAsyncIterableIteratorToSink(iterator, sink);
-  return dispose;
+  // dispose will be called when the observable subscription got destroyed
+  // the dispose call will ensure that the async iterator is completed.
+  return () => dispose();
 });
+
+const subscription = observable.subscribe({
+  next: console.log,
+  complete: () => console.log("done."),
+  error: () => console.log("error.")
+});
+
+const interval = setInterval(() => {
+  iterator.push("hi");
+}, 1000);
+
+setTimeout(() => {
+  subscription.unsubscribe();
+  clearInterval(interval);
+}, 5000);
 ```
 
 **Put it all together**
@@ -108,7 +126,9 @@ export const execute = (request: RequestParameters, variables: Variables) => {
     // Apply our async iterable to the relay sink
     // unfortunately relay cannot consume an async iterable right now.
     const dispose = applyAsyncIterableIteratorToSink(compositeIterator, sink);
-    return dispose;
+    // dispose will be called by relay when the observable is disposed
+    // the dispose call will ensure that the async iterator is completed.
+    return () => dispose();
   });
 };
 ```
