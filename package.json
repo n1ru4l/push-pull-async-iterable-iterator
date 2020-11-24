@@ -28,6 +28,7 @@
   "name": "@n1ru4l/push-pull-async-iterable-iterator",
   "author": "n1ru4l",
   "module": "dist/push-pull-async-iterable-iterator.esm.js",
+  "repository": "https://github.com/n1ru4l/push-pull-async-iterable-iterator",
   "size-limit": [
     {
       "path": "dist/push-pull-async-iterable-iterator.cjs.production.min.js",
