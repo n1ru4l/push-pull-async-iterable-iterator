@@ -63,8 +63,8 @@ import {
 
 const observable = new Observable(sink => {
   const iterator = new PushPullAsyncIterableIterator();
-  applyAsyncIterableIteratorToSink(iterator, sink);
-  return () => iterator?.return();
+  const dispose = applyAsyncIterableIteratorToSink(iterator, sink);
+  return dispose;
 });
 ```
 
