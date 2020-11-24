@@ -1,8 +1,8 @@
-import Observable = require("zen-observable");
 import {
   PushPullAsyncIterableIterator,
   applyAsyncIterableIteratorToSink
 } from "../dist";
+import Observable = require("zen-observable");
 
 it("'applyAsyncIterableIteratorToSink' exists", () => {
   expect(applyAsyncIterableIteratorToSink).toBeDefined();
