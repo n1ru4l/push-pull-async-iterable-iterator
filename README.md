@@ -1,5 +1,9 @@
 # `@n1ru4l/push-pull-async-iterable-iterator`
 
+[![Build Status](https://img.shields.io/github/workflow/status/n1ru4l/push-pull-async-iterable-iterator/CI)](https://github.com/n1ru4l/push-pull-async-iterable-iterator/actions)
+[![npm version](https://img.shields.io/npm/v/@n1ru4l/push-pull-async-iterable-iterator)](https://www.npmjs.com/package/@n1ru4l/push-pull-async-iterable-iterator)
+[![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/push-pull-async-iterable-iterator)](https://www.npmjs.com/package/@n1ru4l/push-pull-async-iterable-iterator)
+
 Create an AsyncIterableIterator from anything while handling back-pressure!
 
 ```bash
