@@ -12,10 +12,10 @@ export function applyAsyncIterableIteratorToSink<
       for await (const value of asyncIterableIterator) {
         sink.next(value);
       }
+      sink.complete();
     } catch (err) {
       sink.error(err);
     }
-    sink.complete();
   };
   run();
 }
