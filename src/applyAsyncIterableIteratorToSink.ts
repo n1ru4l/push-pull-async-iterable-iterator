@@ -6,7 +6,7 @@ export function applyAsyncIterableIteratorToSink<
 >(
   asyncIterableIterator: AsyncIterableIterator<TValue>,
   sink: Sink<TValue, TError>
-): void {
+): () => void {
   const run = async () => {
     try {
       for await (const value of asyncIterableIterator) {
@@ -18,4 +18,8 @@ export function applyAsyncIterableIteratorToSink<
     }
   };
   run();
+
+  return () => {
+    asyncIterableIterator.return?.();
+  };
 }

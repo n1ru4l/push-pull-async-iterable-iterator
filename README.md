@@ -103,9 +103,8 @@ export const execute = (request: RequestParameters, variables: Variables) => {
 
     // Apply our async iterable to the relay sink
     // unfortunately relay cannot consume an async iterable right now.
-    applyAsyncIterableIteratorToSink(compositeIterator, sink);
-
-    return () => compositeIterator.return?.();
+    const dispose = applyAsyncIterableIteratorToSink(compositeIterator, sink);
+    return dispose;
   });
 };
 ```

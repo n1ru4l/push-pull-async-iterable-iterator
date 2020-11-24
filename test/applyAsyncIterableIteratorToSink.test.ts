@@ -12,8 +12,8 @@ it("can be created", done => {
   // In the real-world you would create this iterator inside Observable constructor function.
   const iterator = new PushPullAsyncIterableIterator();
   const observable = new Observable(sink => {
-    applyAsyncIterableIteratorToSink(iterator, sink);
-    return () => iterator.return?.();
+    const dispose = applyAsyncIterableIteratorToSink(iterator, sink);
+    return dispose;
   });
 
   const values = [] as unknown[];
