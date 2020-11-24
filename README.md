@@ -25,7 +25,7 @@ for await (const value of iterator) {
 **Wrap a Sink**
 
 ```ts
-import { makeAsyncIterableFromSink } from "@n1ru4l/push-pull-async-iterable-iterator";
+import { makeAsyncIterableIteratorFromSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 // let's use some GraphQL client :)
 import { createClient } from "graphql-ws/lib/use/ws";
 
@@ -33,7 +33,7 @@ const client = createClient({
   url: "ws://localhost:3000/graphql"
 });
 
-const iterator = makeAsyncIterableFromSink(sink => {
+const asyncIterableIterator = makeAsyncIterableIteratorFromSink(sink => {
   const dispose = client.subscribe(
     {
       query: "{ hello }"
@@ -47,9 +47,66 @@ const iterator = makeAsyncIterableFromSink(sink => {
   return () => dispose();
 });
 
-for await (const value of iterator) {
+for await (const value of asyncIterableIterator) {
   console.log(value);
 }
+```
+
+**Apply an AsyncIterableIterator to a sink**
+
+```tsx
+import Observable from "zen-observable";
+import {
+  PushPullAsyncIterableIterator,
+  applyAsyncIterableIteratorToSink
+} from "@n1ru4l/push-pull-async-iterable-iterator";
+
+const observable = new Observable(sink => {
+  const iterator = new PushPullAsyncIterableIterator();
+  applyAsyncIterableIteratorToSink(iterator, sink);
+  return () => iterator?.return();
+});
+```
+
+**Put it all together**
+
+```tsx
+import { Observable, RequestParameters, Variables } from "relay-runtime";
+import { createClient } from "graphql-ws/lib/use/ws";
+import {
+  makeAsyncIterableFromSink,
+  applyAsyncIterableIteratorToSink
+} from "@n1ru4l/push-pull-async-iterable-iterator";
+import { createLiveQueryPatchDeflator } from "@n1ru4l/graphql-live-query-patch";
+
+const client = createClient({
+  url: "ws://localhost:3000/graphql"
+});
+
+export const execute = (request: RequestParameters, variables: Variables) => {
+  if (!request.text) {
+    throw new Error("Missing document.");
+  }
+  const query = request.text;
+
+  return Observable.create<GraphQLResponse>(sink => {
+    // Create our asyncIterator from a Sink
+    const asyncIterator = makeAsyncIterableFromSink(wsSink => {
+      const dispose = client.subscribe({ query }, wsSink);
+      return () => dispose();
+    });
+
+    // Apply our async iterable to the relay sink
+    // unfortunately relay cannot consume an async iterable right now.
+    applyAsyncIterableIteratorToSink(
+      // apply some middleware to our asyncIterator
+      createLiveQueryPatchDeflator(asyncIterator),
+      sink
+    );
+
+    return () => asyncIterator.return?.();
+  });
+};
 ```
 
 ---

@@ -1,10 +1,5 @@
 import { PushPullAsyncIterableIterator } from "./PushPullAsyncIterableIterator";
-
-export type Sink<TValue = unknown, TError = unknown> = {
-  next: (value: TValue) => void;
-  error: (error: TError) => void;
-  complete: () => void;
-};
+import { Sink } from "./Sink";
 
 export const makeAsyncIterableIteratorFromSink = <
   TValue = unknown,
