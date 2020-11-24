@@ -1,4 +1,60 @@
-# TSDX User Guide
+# `@n1ru4l/push-pull-async-iterable-iterator`
+
+Create an AsyncIterableIterator from anything while handling back-pressure!
+
+```bash
+yarn install -E @n1ru4l/push-pull-async-iterable-iterator
+```
+
+**Standalone Usage**
+
+```ts
+import { PushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
+
+const iterator = new PushPullAsyncIterableIterator();
+iterator.push(1);
+iterator.push(2);
+iterator.push(3);
+
+// prints 1, 2, 3
+for await (const value of iterator) {
+  console.log(value);
+}
+```
+
+**Wrap a Sink**
+
+```ts
+import { makeAsyncIterableFromSink } from "@n1ru4l/push-pull-async-iterable-iterator";
+// let's use some GraphQL client :)
+import { createClient } from "graphql-ws/lib/use/ws";
+
+const client = createClient({
+  url: "ws://localhost:3000/graphql"
+});
+
+const iterator = makeAsyncIterableFromSink(sink => {
+  const dispose = client.subscribe(
+    {
+      query: "{ hello }"
+    },
+    {
+      next: sink.next,
+      error: sink.error,
+      complete: sink.complete
+    }
+  );
+  return () => dispose();
+});
+
+for await (const value of iterator) {
+  console.log(value);
+}
+```
+
+---
+
+## TSDX User Guide
 
 Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
 
@@ -6,7 +62,7 @@ Congrats! You just saved yourself hours of work by bootstrapping this project wi
 
 > If you’re new to TypeScript, checkout [this handy cheatsheet](https://devhints.io/typescript)
 
-## Commands
+### Commands
 
 TSDX scaffolds your new library inside `/src`.
 
@@ -22,19 +78,19 @@ To do a one-off build, use `npm run build` or `yarn build`.
 
 To run tests, use `npm test` or `yarn test`.
 
-## Configuration
+### Configuration
 
 Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
 
-### Jest
+#### Jest
 
 Jest tests are set up to run with `npm test` or `yarn test`.
 
-### Bundle Analysis
+#### Bundle Analysis
 
 [`size-limit`](https://github.com/ai/size-limit) is set up to calculate the real cost of your library with `npm run size` and visualize the bundle with `npm run analyze`.
 
-#### Setup Files
+##### Setup Files
 
 This is the folder structure we set up for you:
 
@@ -49,24 +105,24 @@ README.md         # EDIT THIS
 tsconfig.json
 ```
 
-### Rollup
+#### Rollup
 
 TSDX uses [Rollup](https://rollupjs.org) as a bundler and generates multiple rollup configs for various module formats and build settings. See [Optimizations](#optimizations) for details.
 
-### TypeScript
+#### TypeScript
 
 `tsconfig.json` is set up to interpret `dom` and `esnext` types, as well as `react` for `jsx`. Adjust according to your needs.
 
-## Continuous Integration
+### Continuous Integration
 
-### GitHub Actions
+#### GitHub Actions
 
 Two actions are added by default:
 
 - `main` which installs deps w/ cache, lints, tests, and builds on all pushes against a Node and OS matrix
 - `size` which comments cost comparison of your library on every pull request using [`size-limit`](https://github.com/ai/size-limit)
 
-## Optimizations
+### Optimizations
 
 Please see the main `tsdx` [optimizations docs](https://github.com/palmerhq/tsdx#optimizations). In particular, know that you can take advantage of development-only optimizations:
 
@@ -76,28 +132,28 @@ declare var __DEV__: boolean;
 
 // inside your code...
 if (__DEV__) {
-  console.log('foo');
+  console.log("foo");
 }
 ```
 
 You can also choose to install and use [invariant](https://github.com/palmerhq/tsdx#invariant) and [warning](https://github.com/palmerhq/tsdx#warning) functions.
 
-## Module Formats
+### Module Formats
 
 CJS, ESModules, and UMD module formats are supported.
 
 The appropriate paths are configured in `package.json` and `dist/index.js` accordingly. Please report if any issues are found.
 
-## Named Exports
+### Named Exports
 
 Per Palmer Group guidelines, [always use named exports.](https://github.com/palmerhq/typescript#exports) Code split inside your React app instead of your React library.
 
-## Including Styles
+### Including Styles
 
 There are many ways to ship styles, including with CSS-in-JS. TSDX has no opinion on this, configure how you like.
 
 For vanilla CSS, you can include it at the root directory and add it to the `files` section in your `package.json`, so that it can be imported separately by your users and run through their bundler's loader.
 
-## Publishing to NPM
+### Publishing to NPM
 
 We recommend using [np](https://github.com/sindresorhus/np).
