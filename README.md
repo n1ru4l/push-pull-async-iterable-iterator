@@ -77,7 +77,7 @@ import {
   makeAsyncIterableFromSink,
   applyAsyncIterableIteratorToSink
 } from "@n1ru4l/push-pull-async-iterable-iterator";
-import { createLiveQueryPatchDeflator } from "@n1ru4l/graphql-live-query-patch";
+import { createLiveQueryPatchInflator } from "@n1ru4l/graphql-live-query-patch";
 
 const client = createClient({
   url: "ws://localhost:3000/graphql"
@@ -100,7 +100,7 @@ export const execute = (request: RequestParameters, variables: Variables) => {
     // unfortunately relay cannot consume an async iterable right now.
     applyAsyncIterableIteratorToSink(
       // apply some middleware to our asyncIterator
-      createLiveQueryPatchDeflator(executionResultIterator),
+      createLiveQueryPatchInflator(executionResultIterator),
       sink
     );
 
