@@ -91,7 +91,7 @@ export const execute = (request: RequestParameters, variables: Variables) => {
 
   return Observable.create<GraphQLResponse>(sink => {
     // Create our asyncIterator from a Sink
-    const asyncIterator = makeAsyncIterableFromSink(wsSink => {
+    const executionResultIterator = makeAsyncIterableFromSink(wsSink => {
       const dispose = client.subscribe({ query }, wsSink);
       return () => dispose();
     });
@@ -100,11 +100,11 @@ export const execute = (request: RequestParameters, variables: Variables) => {
     // unfortunately relay cannot consume an async iterable right now.
     applyAsyncIterableIteratorToSink(
       // apply some middleware to our asyncIterator
-      createLiveQueryPatchDeflator(asyncIterator),
+      createLiveQueryPatchDeflator(executionResultIterator),
       sink
     );
 
-    return () => asyncIterator.return?.();
+    return () => executionResultIterator.return?.();
   });
 };
 ```
