@@ -16,16 +16,16 @@ export const makeAsyncIterableIteratorFromSink = <
   let dispose: () => void = () => undefined;
 
   const sink: Sink<TValue, TError> = {
-    next: (value) => {
+    next: (value: TValue) => {
       asyncIterator.push(value);
     },
     complete: () => {
       dispose();
       asyncIterator.return?.();
     },
-    error: (err) => {
+    error: (err: TError) => {
       asyncIterator.throw?.(err);
-    },
+    }
   };
 
   dispose = make(sink);

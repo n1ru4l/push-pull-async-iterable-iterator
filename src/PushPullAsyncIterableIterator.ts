@@ -69,7 +69,7 @@ export class PushPullAsyncIterableIterator<T>
     this.errorValue = value;
     return Promise.resolve({
       done: true,
-      value: undefined,
+      value: undefined
     });
   }
 }
