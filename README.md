@@ -96,15 +96,16 @@ export const execute = (request: RequestParameters, variables: Variables) => {
       return () => dispose();
     });
 
-    // Apply our async iterable to the relay sink
-    // unfortunately relay cannot consume an async iterable right now.
-    applyAsyncIterableIteratorToSink(
-      // apply some middleware to our asyncIterator
-      createLiveQueryPatchInflator(executionResultIterator),
-      sink
+    // apply some middleware to our asyncIterator
+    const compositeIterator = createLiveQueryPatchInflator(
+      executionResultIterator
     );
 
-    return () => executionResultIterator.return?.();
+    // Apply our async iterable to the relay sink
+    // unfortunately relay cannot consume an async iterable right now.
+    applyAsyncIterableIteratorToSink(compositeIterator, sink);
+
+    return () => compositeIterator.return?.();
   });
 };
 ```
