@@ -99,7 +99,7 @@ import {
   makeAsyncIterableFromSink,
   applyAsyncIterableIteratorToSink
 } from "@n1ru4l/push-pull-async-iterable-iterator";
-import { createLiveQueryPatchInflator } from "@n1ru4l/graphql-live-query-patch";
+import { createApplyLiveQueryPatch } from "@n1ru4l/graphql-live-query-patch";
 
 const client = createClient({
   url: "ws://localhost:3000/graphql"
@@ -117,9 +117,11 @@ export const execute = (request: RequestParameters, variables: Variables) => {
       const dispose = client.subscribe({ query }, wsSink);
       return () => dispose();
     });
+    
+    const applyLiveQueryPatch = createApplyLiveQueryPatch();
 
     // apply some middleware to our asyncIterator
-    const compositeIterator = createLiveQueryPatchInflator(
+    const compositeIterator = applyLiveQueryPatch(
       executionResultIterator
     );
 
