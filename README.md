@@ -4,7 +4,7 @@
 [![npm version](https://img.shields.io/npm/v/@n1ru4l/push-pull-async-iterable-iterator)](https://www.npmjs.com/package/@n1ru4l/push-pull-async-iterable-iterator)
 [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/push-pull-async-iterable-iterator)](https://www.npmjs.com/package/@n1ru4l/push-pull-async-iterable-iterator)
 
-Create an AsyncIterableIterator from anything while handling back-pressure!
+Create an AsyncIterableIterator from anything (on any modern platform) while handling back-pressure!
 
 ```bash
 yarn install -E @n1ru4l/push-pull-async-iterable-iterator
@@ -13,18 +13,33 @@ yarn install -E @n1ru4l/push-pull-async-iterable-iterator
 **Standalone Usage**
 
 ```ts
-import { PushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
+import { makePushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
 
-const iterator = new PushPullAsyncIterableIterator();
-iterator.push(1);
-iterator.push(2);
-iterator.push(3);
+const [push, iterator] = makePushPullAsyncIterableIterator();
+push(1);
+push(2);
+push(3);
 
 // prints 1, 2, 3
 for await (const value of iterator) {
   console.log(value);
 }
 ```
+
+**Check if something is an AsyncIterable**
+
+```ts
+import { isAsyncIterable } from "@n1ru4l/push-pull-async-iterable-iterator";
+
+if (isAsyncIterable(something)) {
+  for await (const value of something) {
+    console.log(value);
+  }
+}
+```
+
+_Note:_ On Safari iOS [`Symbol.asyncIterator` is not available](https://caniuse.com/mdn-javascript_builtins_symbol_asynciterator), therefore all async iterators used must be build using [AsyncGenerators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of#Iterating_over_async_generators).
+If a AsyncIterable that is NO AsyncGenerator is passed to `isAsyncIterable` on the Safari iOS environment, it will throw an error.
 
 **Wrap a Sink**
 
@@ -117,13 +132,11 @@ export const execute = (request: RequestParameters, variables: Variables) => {
       const dispose = client.subscribe({ query }, wsSink);
       return () => dispose();
     });
-    
+
     const applyLiveQueryPatch = createApplyLiveQueryPatch();
 
     // apply some middleware to our asyncIterator
-    const compositeIterator = applyLiveQueryPatch(
-      executionResultIterator
-    );
+    const compositeIterator = applyLiveQueryPatch(executionResultIterator);
 
     // Apply our async iterable to the relay sink
     // unfortunately relay cannot consume an async iterable right now.

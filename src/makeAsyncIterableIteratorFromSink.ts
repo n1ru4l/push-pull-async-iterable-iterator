@@ -1,4 +1,4 @@
-import { PushPullAsyncIterableIterator } from "./PushPullAsyncIterableIterator";
+import { makePushPullAsyncIterableIterator } from "./makePushPullAsyncIterableIterator";
 import { Sink } from "./Sink";
 
 export const makeAsyncIterableIteratorFromSink = <
@@ -7,12 +7,12 @@ export const makeAsyncIterableIteratorFromSink = <
 >(
   make: (sink: Sink<TValue, TError>) => () => void
 ): AsyncIterableIterator<TValue> => {
-  const asyncIterator = new PushPullAsyncIterableIterator<TValue>();
+  const [push, asyncIterator] = makePushPullAsyncIterableIterator<TValue>();
   let dispose: () => void = () => undefined;
 
   const sink: Sink<TValue, TError> = {
     next: (value: TValue) => {
-      asyncIterator.push(value);
+      push(value);
     },
     complete: () => {
       dispose();

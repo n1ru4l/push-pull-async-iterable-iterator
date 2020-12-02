@@ -1,18 +1,18 @@
-import { PushPullAsyncIterableIterator } from "..";
+import { makePushPullAsyncIterableIterator } from "../dist";
 
 it(`"PushPullAsyncIterableIterator" exists`, () => {
-  expect(PushPullAsyncIterableIterator).toBeDefined();
+  expect(makePushPullAsyncIterableIterator).toBeDefined();
 });
 
 it("can be created", () => {
-  new PushPullAsyncIterableIterator();
+  makePushPullAsyncIterableIterator();
 });
 
 it("can publish some values", async () => {
-  const iterator = new PushPullAsyncIterableIterator();
-  iterator.push(1);
-  iterator.push(2);
-  iterator.push(3);
+  const [push, iterator] = makePushPullAsyncIterableIterator();
+  push(1);
+  push(2);
+  push(3);
 
   let next = await iterator.next();
   expect(next.value).toEqual(1);
@@ -23,9 +23,9 @@ it("can publish some values", async () => {
 });
 
 it("can publish a value for a waiting handler", async () => {
-  const iterator = new PushPullAsyncIterableIterator();
+  const [push, iterator] = makePushPullAsyncIterableIterator();
   const nextP = iterator.next();
-  iterator.push(1);
+  push(1);
   const next = await nextP;
   expect(next.value).toEqual(1);
 });

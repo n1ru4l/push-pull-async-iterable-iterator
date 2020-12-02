@@ -1,5 +1,5 @@
 import {
-  PushPullAsyncIterableIterator,
+  makePushPullAsyncIterableIterator,
   applyAsyncIterableIteratorToSink
 } from "../dist";
 import Observable = require("zen-observable");
@@ -10,7 +10,7 @@ it("'applyAsyncIterableIteratorToSink' exists", () => {
 
 it("can be created", done => {
   // In the real-world you would create this iterator inside Observable constructor function.
-  const iterator = new PushPullAsyncIterableIterator();
+  const [push, iterator] = makePushPullAsyncIterableIterator();
   const observable = new Observable(sink => {
     const dispose = applyAsyncIterableIteratorToSink(iterator, sink);
     return dispose;
@@ -31,9 +31,9 @@ it("can be created", done => {
     }
   });
 
-  iterator.push(1);
-  iterator.push(2);
-  iterator.push(3);
+  push(1);
+  push(2);
+  push(3);
   process.nextTick(() => {
     iterator.return?.();
   });
