@@ -8,6 +8,6 @@ export function isAsyncIterable(
     // Symbol.asyncIterator implemented
     // That means every custom AsyncIterable must be built using a AsyncGeneratorFunction (async function * () {})
     ((input as any)[Symbol.toStringTag] === "AsyncGenerator" ||
-      Symbol.asyncIterator in input)
+      (Symbol.asyncIterator && Symbol.asyncIterator in input))
   );
 }
