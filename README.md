@@ -15,13 +15,16 @@ yarn install -E @n1ru4l/push-pull-async-iterable-iterator
 ```ts
 import { makePushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
 
-const [push, iterator] = makePushPullAsyncIterableIterator();
-push(1);
-push(2);
-push(3);
+const {
+  pushValue,
+  asyncIterableIterator
+} = makePushPullAsyncIterableIterator();
+pushValue(1);
+pushValue(2);
+pushValue(3);
 
 // prints 1, 2, 3
-for await (const value of iterator) {
+for await (const value of asyncIterableIterator) {
   console.log(value);
 }
 ```
@@ -76,14 +79,14 @@ for await (const value of asyncIterableIterator) {
 ```tsx
 import Observable from "zen-observable";
 import {
-  PushPullAsyncIterableIterator,
+  makePushPullAsyncIterableIterator,
   applyAsyncIterableIteratorToSink
 } from "@n1ru4l/push-pull-async-iterable-iterator";
 
-const iterator = new PushPullAsyncIterableIterator();
+const { asyncIterableIterator } = makePushPullAsyncIterableIterator();
 
 const observable = new Observable(sink => {
-  const dispose = applyAsyncIterableIteratorToSink(iterator, sink);
+  const dispose = applyAsyncIterableIteratorToSink(asyncIterableIterator, sink);
   // dispose will be called when the observable subscription got destroyed
   // the dispose call will ensure that the async iterator is completed.
   return () => dispose();

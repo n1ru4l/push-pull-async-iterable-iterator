@@ -9,23 +9,29 @@ it("can be created", () => {
 });
 
 it("can publish some values", async () => {
-  const [push, iterator] = makePushPullAsyncIterableIterator();
-  push(1);
-  push(2);
-  push(3);
+  const {
+    pushValue,
+    asyncIterableIterator
+  } = makePushPullAsyncIterableIterator();
+  pushValue(1);
+  pushValue(2);
+  pushValue(3);
 
-  let next = await iterator.next();
+  let next = await asyncIterableIterator.next();
   expect(next.value).toEqual(1);
-  next = await iterator.next();
+  next = await asyncIterableIterator.next();
   expect(next.value).toEqual(2);
-  next = await iterator.next();
+  next = await asyncIterableIterator.next();
   expect(next.value).toEqual(3);
 });
 
 it("can publish a value for a waiting handler", async () => {
-  const [push, iterator] = makePushPullAsyncIterableIterator();
-  const nextP = iterator.next();
-  push(1);
+  const {
+    pushValue,
+    asyncIterableIterator
+  } = makePushPullAsyncIterableIterator();
+  const nextP = asyncIterableIterator.next();
+  pushValue(1);
   const next = await nextP;
   expect(next.value).toEqual(1);
 });

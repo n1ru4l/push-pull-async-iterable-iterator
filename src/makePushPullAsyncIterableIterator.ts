@@ -13,6 +13,13 @@ function createDeferred<T>(): Deferred<T> {
   return d;
 }
 
+export type PushPullAsyncIterableIterator<T> = {
+  /* Push a new value that will be published on the AsyncIterableIterator. */
+  pushValue: (value: T) => void;
+  /* AsyncIterableIterator that publishes the values pushed on the stack with pushValue. */
+  asyncIterableIterator: AsyncIterableIterator<T>;
+};
+
 /**
  * makePushPullAsyncIterableIterator
  *
@@ -20,14 +27,15 @@ function createDeferred<T>(): Deferred<T> {
  * Afterwards it is in the completed state and cannot be used for publishing any further values.
  * It will handle back-pressure and keep pushed values until they are consumed by a source.
  */
-
-export function makePushPullAsyncIterableIterator<T>() {
+export function makePushPullAsyncIterableIterator<
+  T
+>(): PushPullAsyncIterableIterator<T> {
   let isRunning = true;
   const values: Array<T> = [];
 
   let d = createDeferred<"finished" | "newValue">();
 
-  const iterator = (async function* PushPullAsyncIterableIterator(): AsyncIterableIterator<
+  const asyncIterableIterator = (async function* PushPullAsyncIterableIterator(): AsyncIterableIterator<
     T
   > {
     while (isRunning) {
@@ -42,7 +50,7 @@ export function makePushPullAsyncIterableIterator<T>() {
     }
   })();
 
-  function push(value: T) {
+  function pushValue(value: T) {
     if (isRunning === false) {
       // TODO: Should this throw?
       return;
@@ -54,8 +62,12 @@ export function makePushPullAsyncIterableIterator<T>() {
   }
 
   // We monkey patch the original generator for clean-up
-  const originalReturn = iterator["return"]?.bind(iterator);
-  iterator["return"] = (...args): Promise<IteratorResult<T, void>> => {
+  const originalReturn = asyncIterableIterator["return"]?.bind(
+    asyncIterableIterator
+  );
+  asyncIterableIterator["return"] = (
+    ...args
+  ): Promise<IteratorResult<T, void>> => {
     isRunning = false;
     d.resolve("finished");
     return (
@@ -63,8 +75,12 @@ export function makePushPullAsyncIterableIterator<T>() {
       Promise.resolve({ done: true, value: undefined })
     );
   };
-  const originalThrow = iterator["throw"]?.bind(iterator);
-  iterator["throw"] = (...args): Promise<IteratorResult<T, void>> => {
+  const originalThrow = asyncIterableIterator["throw"]?.bind(
+    asyncIterableIterator
+  );
+  asyncIterableIterator["throw"] = (
+    ...args
+  ): Promise<IteratorResult<T, void>> => {
     isRunning = false;
     d.resolve("finished");
     return (
@@ -73,5 +89,8 @@ export function makePushPullAsyncIterableIterator<T>() {
     );
   };
 
-  return [push, iterator] as const;
+  return {
+    pushValue,
+    asyncIterableIterator
+  };
 }

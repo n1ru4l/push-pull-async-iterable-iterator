@@ -7,22 +7,25 @@ export const makeAsyncIterableIteratorFromSink = <
 >(
   make: (sink: Sink<TValue, TError>) => () => void
 ): AsyncIterableIterator<TValue> => {
-  const [push, asyncIterator] = makePushPullAsyncIterableIterator<TValue>();
+  const {
+    pushValue,
+    asyncIterableIterator
+  } = makePushPullAsyncIterableIterator<TValue>();
   let dispose: () => void = () => undefined;
 
   const sink: Sink<TValue, TError> = {
     next: (value: TValue) => {
-      push(value);
+      pushValue(value);
     },
     complete: () => {
       dispose();
-      asyncIterator.return?.();
+      asyncIterableIterator.return?.();
     },
     error: (err: TError) => {
-      asyncIterator.throw?.(err);
+      asyncIterableIterator.throw?.(err);
     }
   };
 
   dispose = make(sink);
-  return asyncIterator;
+  return asyncIterableIterator;
 };
