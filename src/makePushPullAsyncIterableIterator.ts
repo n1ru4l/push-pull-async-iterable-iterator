@@ -16,26 +16,26 @@ function createDeferred<T>(): Deferred<T> {
 /**
  * makePushPullAsyncIterableIterator
  *
- * The iterable will publish values until return ot throw is called.
+ * The iterable will publish values until return or throw is called.
  * Afterwards it is in the completed state and cannot be used for publishing any further values.
  * It will handle back-pressure and keep pushed values until they are consumed by a source.
  */
 
 export function makePushPullAsyncIterableIterator<T>() {
   let isRunning = true;
-  const pushQueue: Array<T> = [];
+  const values: Array<T> = [];
 
-  let d = createDeferred<"FINISH" | "NEW_VALUE">();
+  let d = createDeferred<"finished" | "newValue">();
 
   const iterator = (async function* PushPullAsyncIterableIterator(): AsyncIterableIterator<
     T
   > {
     while (isRunning) {
-      if (pushQueue.length > 0) {
-        yield pushQueue.shift()!;
+      if (values.length > 0) {
+        yield values.shift()!;
       } else {
         const res = await d.promise;
-        if (res === "FINISH") {
+        if (res === "finished") {
           return;
         }
       }
@@ -48,25 +48,28 @@ export function makePushPullAsyncIterableIterator<T>() {
       return;
     }
 
-    pushQueue.push(value);
-    d.resolve("NEW_VALUE");
+    values.push(value);
+    d.resolve("newValue");
     d = createDeferred();
   }
 
-  const oReturn = iterator["return"]?.bind(iterator);
-  iterator["return"] = (...args) => {
+  // We monkey patch the original generator for clean-up
+  const originalReturn = iterator["return"]?.bind(iterator);
+  iterator["return"] = (...args): Promise<IteratorResult<T, void>> => {
     isRunning = false;
-    d.resolve("FINISH");
+    d.resolve("finished");
     return (
-      oReturn?.(...args) ?? Promise.resolve({ done: true, value: undefined })
+      originalReturn?.(...args) ??
+      Promise.resolve({ done: true, value: undefined })
     );
   };
-  const oThrow = iterator["throw"]?.bind(iterator);
-  iterator["throw"] = (...args) => {
+  const originalThrow = iterator["throw"]?.bind(iterator);
+  iterator["throw"] = (...args): Promise<IteratorResult<T, void>> => {
     isRunning = false;
-    d.resolve("FINISH");
+    d.resolve("finished");
     return (
-      oThrow?.(...args) ?? Promise.resolve({ done: true, value: undefined })
+      originalThrow?.(...args) ??
+      Promise.resolve({ done: true, value: undefined })
     );
   };
 
