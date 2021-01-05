@@ -20,6 +20,9 @@ export type PushPullAsyncIterableIterator<T> = {
   asyncIterableIterator: AsyncIterableIterator<T>;
 };
 
+const SYMBOL_FINISHED = Symbol();
+const SYMBOL_NEW_VALUE = Symbol();
+
 /**
  * makePushPullAsyncIterableIterator
  *
@@ -33,18 +36,23 @@ export function makePushPullAsyncIterableIterator<
   let isRunning = true;
   const values: Array<T> = [];
 
-  let d = createDeferred<"finished" | "newValue">();
+  let newValueD = createDeferred<typeof SYMBOL_NEW_VALUE>();
+  let finishedD = createDeferred<typeof SYMBOL_FINISHED>();
 
   const asyncIterableIterator = (async function* PushPullAsyncIterableIterator(): AsyncIterableIterator<
     T
   > {
-    while (isRunning) {
+    while (true) {
       if (values.length > 0) {
         yield values.shift()!;
       } else {
-        const res = await d.promise;
-        if (res === "finished") {
-          return;
+        const result = await Promise.race([
+          newValueD.promise,
+          finishedD.promise
+        ]);
+
+        if (result === SYMBOL_FINISHED) {
+          break;
         }
       }
     }
@@ -57,8 +65,8 @@ export function makePushPullAsyncIterableIterator<
     }
 
     values.push(value);
-    d.resolve("newValue");
-    d = createDeferred();
+    newValueD.resolve(SYMBOL_NEW_VALUE);
+    newValueD = createDeferred();
   }
 
   // We monkey patch the original generator for clean-up
@@ -69,7 +77,7 @@ export function makePushPullAsyncIterableIterator<
     ...args
   ): Promise<IteratorResult<T, void>> => {
     isRunning = false;
-    d.resolve("finished");
+    finishedD.resolve(SYMBOL_FINISHED);
     return (
       originalReturn?.(...args) ??
       Promise.resolve({ done: true, value: undefined })
@@ -82,7 +90,7 @@ export function makePushPullAsyncIterableIterator<
     ...args
   ): Promise<IteratorResult<T, void>> => {
     isRunning = false;
-    d.resolve("finished");
+    finishedD.resolve(SYMBOL_FINISHED);
     return (
       originalThrow?.(...args) ??
       Promise.resolve({ done: true, value: undefined })
