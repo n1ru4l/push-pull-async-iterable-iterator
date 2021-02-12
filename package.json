@@ -20,10 +20,9 @@
     "build": "tsdx build --target node",
     "test": "tsdx test",
     "lint": "tsdx lint",
-    "prepare": "tsdx build",
+    "prepare": "patch-package && tsdx build",
     "size": "size-limit",
-    "analyze": "size-limit --why",
-    "postinstall": "patch-package"
+    "analyze": "size-limit --why"
   },
   "peerDependencies": {},
   "husky": {
