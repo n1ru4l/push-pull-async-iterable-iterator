@@ -1,8 +1,10 @@
 # `@n1ru4l/push-pull-async-iterable-iterator`
 
-[![Build Status](https://img.shields.io/github/workflow/status/n1ru4l/push-pull-async-iterable-iterator/CI)](https://github.com/n1ru4l/push-pull-async-iterable-iterator/actions)
+[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 [![npm version](https://img.shields.io/npm/v/@n1ru4l/push-pull-async-iterable-iterator)](https://www.npmjs.com/package/@n1ru4l/push-pull-async-iterable-iterator)
 [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/push-pull-async-iterable-iterator)](https://www.npmjs.com/package/@n1ru4l/push-pull-async-iterable-iterator)
+[![Dependents](https://img.shields.io/librariesio/dependents/npm/@n1ru4l/push-pull-async-iterable-iterator)](https://www.npmjs.com/browse/depended/@n1ru4l/push-pull-async-iterable-iterator)
+[![Build Status](https://img.shields.io/github/workflow/status/n1ru4l/push-pull-async-iterable-iterator/CI)](https://github.com/n1ru4l/push-pull-async-iterable-iterator/actions)
 
 Create an AsyncIterableIterator from anything (on any modern platform) while handling back-pressure!
 
