@@ -1,0 +1,30 @@
+diff --git a/node_modules/tsdx/dist/createRollupConfig.js b/node_modules/tsdx/dist/createRollupConfig.js
+index d6d9378..ff18dbe 100644
+--- a/node_modules/tsdx/dist/createRollupConfig.js
++++ b/node_modules/tsdx/dist/createRollupConfig.js
+@@ -20,6 +20,7 @@ const errorCodeOpts = {
+ // shebang cache map thing because the transform only gets run once
+ let shebang = {};
+ async function createRollupConfig(opts, outputNum) {
++    console.log(opts)
+     var _a, _b;
+     const findAndRecordErrorCodes = await extractErrors_1.extractErrors(Object.assign(Object.assign({}, errorCodeOpts), opts));
+     const shouldMinify = opts.minify !== undefined ? opts.minify : opts.env === 'production';
+@@ -28,7 +29,7 @@ async function createRollupConfig(opts, outputNum) {
+         opts.format,
+         opts.env,
+         shouldMinify ? 'min' : '',
+-        'js',
++        opts.format === 'esm' ? 'mjs' : 'js',
+     ]
+         .filter(Boolean)
+         .join('.');
+@@ -162,7 +163,7 @@ async function createRollupConfig(opts, outputNum) {
+                 extensions: [...core_1.DEFAULT_EXTENSIONS, 'ts', 'tsx'],
+                 passPerPreset: true,
+                 custom: {
+-                    targets: opts.target === 'node' ? { node: '10' } : undefined,
++                    targets: opts.target === 'node' ? { node: '12' } : undefined,
+                     extractErrors: opts.extractErrors,
+                     format: opts.format,
+                 },
