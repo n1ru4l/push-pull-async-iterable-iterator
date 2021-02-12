@@ -20,7 +20,7 @@
     "build": "tsdx build --target node",
     "test": "tsdx test",
     "lint": "tsdx lint",
-    "prepare": "patch-package && tsdx build",
+    "prepare": "patch-package && yarn build",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
