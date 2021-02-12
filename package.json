@@ -2,6 +2,11 @@
   "version": "2.0.1",
   "license": "MIT",
   "main": "dist/index.js",
+  "module": "dist/push-pull-async-iterable-iterator.esm.mjs",
+  "exports": {
+    "import": "./dist/push-pull-async-iterable-iterator.esm.mjs",
+    "require": "./dist/index.js"
+  },
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
@@ -17,7 +22,8 @@
     "lint": "tsdx lint",
     "prepare": "tsdx build",
     "size": "size-limit",
-    "analyze": "size-limit --why"
+    "analyze": "size-limit --why",
+    "postinstall": "patch-package"
   },
   "peerDependencies": {},
   "husky": {
@@ -27,7 +33,6 @@
   },
   "name": "@n1ru4l/push-pull-async-iterable-iterator",
   "author": "n1ru4l",
-  "module": "dist/push-pull-async-iterable-iterator.esm.js",
   "repository": "https://github.com/n1ru4l/push-pull-async-iterable-iterator",
   "size-limit": [
     {
@@ -35,7 +40,7 @@
       "limit": "10 KB"
     },
     {
-      "path": "dist/push-pull-async-iterable-iterator.esm.js",
+      "path": "dist/push-pull-async-iterable-iterator.esm.mjs",
       "limit": "10 KB"
     }
   ],
@@ -43,6 +48,8 @@
     "@size-limit/preset-small-lib": "4.9.2",
     "@types/zen-observable": "0.8.2",
     "husky": "4.3.8",
+    "move-file-cli": "2.0.0",
+    "patch-package": "6.2.2",
     "size-limit": "4.9.2",
     "tsdx": "0.14.1",
     "tslib": "2.1.0",
