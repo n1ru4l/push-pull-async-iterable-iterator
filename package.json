@@ -4,8 +4,8 @@
   "main": "dist/index.js",
   "module": "dist/push-pull-async-iterable-iterator.esm.mjs",
   "exports": {
-    "import": "./dist/push-pull-async-iterable-iterator.esm.mjs",
-    "require": "./dist/index.js"
+    "require": "./dist/index.js",
+    "default": "./dist/push-pull-async-iterable-iterator.esm.mjs"
   },
   "typings": "dist/index.d.ts",
   "files": [
