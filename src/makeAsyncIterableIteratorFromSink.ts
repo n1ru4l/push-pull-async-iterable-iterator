@@ -18,7 +18,6 @@ export const makeAsyncIterableIteratorFromSink = <
       pushValue(value);
     },
     complete: () => {
-      dispose();
       asyncIterableIterator.return?.();
     },
     error: (err: TError) => {
@@ -27,5 +26,10 @@ export const makeAsyncIterableIteratorFromSink = <
   };
 
   dispose = make(sink);
-  return asyncIterableIterator;
+  const originalReturn = asyncIterableIterator?.return;
+  asyncIterableIterator.return = () => {
+    dispose();
+    return originalReturn?.() ?? Promise.resolve({ done: true, value: undefined })
+  }
+  return asyncIterableIterator
 };
