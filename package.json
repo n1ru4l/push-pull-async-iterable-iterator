@@ -49,7 +49,7 @@
     "husky": "4.3.8",
     "move-file-cli": "2.0.0",
     "patch-package": "6.4.6",
-    "size-limit": "4.9.2",
+    "size-limit": "4.10.1",
     "tsdx": "0.14.1",
     "tslib": "2.1.0",
     "typescript": "4.2.3",
