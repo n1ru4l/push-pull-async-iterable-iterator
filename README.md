@@ -44,7 +44,7 @@ if (isAsyncIterable(something)) {
 ```
 
 _Note:_ On Safari iOS [`Symbol.asyncIterator` is not available](https://caniuse.com/mdn-javascript_builtins_symbol_asynciterator), therefore all async iterators used must be build using [AsyncGenerators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of#Iterating_over_async_generators).
-If a AsyncIterable that is NO AsyncGenerator is passed to `isAsyncIterable` on the Safari iOS environment, it will throw an error.
+If a AsyncIterable that is NO AsyncGenerator is passed to `isAsyncIterable` on the Safari iOS environment, it will return the value `false`.
 
 **Wrap a Sink**
 
