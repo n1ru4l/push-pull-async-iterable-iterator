@@ -11,7 +11,7 @@ export const makeAsyncIterableIteratorFromSink = <
     pushValue,
     asyncIterableIterator
   } = makePushPullAsyncIterableIterator<TValue>();
-  let dispose = make({
+  const dispose = make({
     next: (value: TValue) => {
       pushValue(value);
     },
