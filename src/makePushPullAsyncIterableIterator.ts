@@ -70,31 +70,25 @@ export function makePushPullAsyncIterableIterator<
   }
 
   // We monkey patch the original generator for clean-up
-  const originalReturn = asyncIterableIterator["return"]?.bind(
+  const originalReturn = asyncIterableIterator.return!.bind(
     asyncIterableIterator
   );
-  asyncIterableIterator["return"] = (
+
+  asyncIterableIterator.return = (
     ...args
   ): Promise<IteratorResult<T, void>> => {
     isRunning = false;
     finishedD.resolve(SYMBOL_FINISHED);
-    return (
-      originalReturn?.(...args) ??
-      Promise.resolve({ done: true, value: undefined })
-    );
+    return originalReturn(...args);
   };
-  const originalThrow = asyncIterableIterator["throw"]?.bind(
+
+  const originalThrow = asyncIterableIterator.throw!.bind(
     asyncIterableIterator
   );
-  asyncIterableIterator["throw"] = (
-    ...args
-  ): Promise<IteratorResult<T, void>> => {
+  asyncIterableIterator.throw = (...args): Promise<IteratorResult<T, void>> => {
     isRunning = false;
     finishedD.resolve(SYMBOL_FINISHED);
-    return (
-      originalThrow?.(...args) ??
-      Promise.resolve({ done: true, value: undefined })
-    );
+    return originalThrow(...args);
   };
 
   return {
