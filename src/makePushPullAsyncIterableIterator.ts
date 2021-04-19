@@ -37,7 +37,7 @@ export function makePushPullAsyncIterableIterator<
   const values: Array<T> = [];
 
   let newValueD = createDeferred<typeof SYMBOL_NEW_VALUE>();
-  let finishedD = createDeferred<typeof SYMBOL_FINISHED>();
+  let finishedD = createDeferred<typeof SYMBOL_FINISHED | any>();
 
   const asyncIterableIterator = (async function* PushPullAsyncIterableIterator(): AsyncIterableIterator<
     T
@@ -53,6 +53,9 @@ export function makePushPullAsyncIterableIterator<
 
         if (result === SYMBOL_FINISHED) {
           break;
+        }
+        if (result !== SYMBOL_NEW_VALUE) {
+          throw result;
         }
       }
     }
@@ -85,10 +88,10 @@ export function makePushPullAsyncIterableIterator<
   const originalThrow = asyncIterableIterator.throw!.bind(
     asyncIterableIterator
   );
-  asyncIterableIterator.throw = (...args): Promise<IteratorResult<T, void>> => {
+  asyncIterableIterator.throw = (err): Promise<IteratorResult<T, void>> => {
     isRunning = false;
-    finishedD.resolve(SYMBOL_FINISHED);
-    return originalThrow(...args);
+    finishedD.resolve(err);
+    return originalThrow(err);
   };
 
   return {

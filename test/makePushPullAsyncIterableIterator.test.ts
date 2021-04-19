@@ -35,3 +35,15 @@ it("can publish a value for a waiting handler", async () => {
   const next = await nextP;
   expect(next.value).toEqual(1);
 });
+
+it("can throw errors", async () => {
+  const { asyncIterableIterator } = makePushPullAsyncIterableIterator();
+  const nextP = asyncIterableIterator.next();
+  asyncIterableIterator.throw!(new Error("Something got thrown."));
+  try {
+    await nextP;
+    fail("should throw");
+  } catch (err) {
+    expect(err.message).toEqual("Something got thrown.");
+  }
+});
