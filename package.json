@@ -44,7 +44,7 @@
     }
   ],
   "devDependencies": {
-    "@size-limit/preset-small-lib": "4.10.1",
+    "@size-limit/preset-small-lib": "4.10.2",
     "@types/zen-observable": "0.8.2",
     "husky": "4.3.8",
     "move-file-cli": "2.0.0",
