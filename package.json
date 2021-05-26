@@ -52,11 +52,11 @@
     "size-limit": "4.10.1",
     "tsdx": "0.14.1",
     "tslib": "2.2.0",
-    "typescript": "4.2.4",
+    "typescript": "4.3.2",
     "zen-observable": "0.8.15"
   },
   "resolutions": {
-    "**/typescript": "4.2.4",
+    "**/typescript": "4.3.2",
     "**/@typescript-eslint/eslint-plugin": "4.22.1",
     "**/@typescript-eslint/parser": "4.22.1"
   }
