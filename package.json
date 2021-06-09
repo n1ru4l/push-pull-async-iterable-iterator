@@ -57,7 +57,7 @@
   },
   "resolutions": {
     "**/typescript": "4.3.2",
-    "**/@typescript-eslint/eslint-plugin": "4.22.1",
-    "**/@typescript-eslint/parser": "4.22.1"
+    "**/@typescript-eslint/eslint-plugin": "4.26.1",
+    "**/@typescript-eslint/parser": "4.26.1"
   }
 }
