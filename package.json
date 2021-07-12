@@ -29,7 +29,8 @@
     "analyze": "size-limit --why",
     "lint-staged": "lint-staged",
     "eslint": "eslint",
-    "ci:eslint": "eslint src/**/*"
+    "ci:eslint": "eslint src/**/*",
+    "release": "changeset publish"
   },
   "peerDependencies": {},
   "name": "@n1ru4l/push-pull-async-iterable-iterator",
