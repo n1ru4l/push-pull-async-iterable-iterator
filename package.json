@@ -1,6 +1,5 @@
 {
   "version": "3.0.0",
-  "private": true,
   "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -79,5 +78,9 @@
     "ts-jest": "27.0.3",
     "typescript": "4.3.5",
     "zen-observable": "0.8.15"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
   }
 }
