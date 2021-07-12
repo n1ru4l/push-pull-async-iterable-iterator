@@ -37,13 +37,14 @@ export function makePushPullAsyncIterableIterator<
   const values: Array<T> = [];
 
   let newValueD = createDeferred<typeof SYMBOL_NEW_VALUE>();
-  let finishedD = createDeferred<typeof SYMBOL_FINISHED | any>();
+  const finishedD = createDeferred<typeof SYMBOL_FINISHED | unknown>();
 
   const asyncIterableIterator = (async function* PushPullAsyncIterableIterator(): AsyncIterableIterator<
     T
   > {
     while (true) {
       if (values.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         yield values.shift()!;
       } else {
         const result = await Promise.race([
@@ -73,6 +74,7 @@ export function makePushPullAsyncIterableIterator<
   }
 
   // We monkey patch the original generator for clean-up
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const originalReturn = asyncIterableIterator.return!.bind(
     asyncIterableIterator
   );
@@ -85,6 +87,7 @@ export function makePushPullAsyncIterableIterator<
     return originalReturn(...args);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const originalThrow = asyncIterableIterator.throw!.bind(
     asyncIterableIterator
   );
