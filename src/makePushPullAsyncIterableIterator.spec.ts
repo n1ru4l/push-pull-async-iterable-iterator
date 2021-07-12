@@ -1,4 +1,4 @@
-import { makePushPullAsyncIterableIterator } from "../dist";
+import { makePushPullAsyncIterableIterator } from "./makePushPullAsyncIterableIterator";
 
 it(`"PushPullAsyncIterableIterator" exists`, () => {
   expect(makePushPullAsyncIterableIterator).toBeDefined();
@@ -39,7 +39,10 @@ it("can publish a value for a waiting handler", async () => {
 it("can throw errors", async () => {
   const { asyncIterableIterator } = makePushPullAsyncIterableIterator();
   const nextP = asyncIterableIterator.next();
-  asyncIterableIterator.throw!(new Error("Something got thrown."));
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  asyncIterableIterator.throw!(new Error("Something got thrown.")).catch(
+    () => undefined
+  );
   try {
     await nextP;
     fail("should throw");
