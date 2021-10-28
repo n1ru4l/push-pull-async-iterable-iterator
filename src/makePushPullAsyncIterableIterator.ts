@@ -17,7 +17,7 @@ export type PushPullAsyncIterableIterator<T> = {
   /* Push a new value that will be published on the AsyncIterableIterator. */
   pushValue: (value: T) => void;
   /* AsyncIterableIterator that publishes the values pushed on the stack with pushValue. */
-  asyncIterableIterator: AsyncIterableIterator<T>;
+  asyncIterableIterator: AsyncGenerator<T, void>;
 };
 
 const SYMBOL_FINISHED = Symbol();
@@ -39,8 +39,9 @@ export function makePushPullAsyncIterableIterator<
   let newValueD = createDeferred<typeof SYMBOL_NEW_VALUE>();
   const finishedD = createDeferred<typeof SYMBOL_FINISHED | unknown>();
 
-  const asyncIterableIterator = (async function* PushPullAsyncIterableIterator(): AsyncIterableIterator<
-    T
+  const asyncIterableIterator = (async function* PushPullAsyncIterableIterator(): AsyncGenerator<
+    T,
+    void
   > {
     while (true) {
       if (values.length > 0) {
@@ -75,12 +76,13 @@ export function makePushPullAsyncIterableIterator<
 
   // We monkey patch the original generator for clean-up
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const originalReturn = asyncIterableIterator.return!.bind(
+  const originalReturn = asyncIterableIterator.return.bind(
     asyncIterableIterator
   );
 
   asyncIterableIterator.return = (
-    ...args
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...args: any[]
   ): Promise<IteratorResult<T, void>> => {
     isRunning = false;
     finishedD.resolve(SYMBOL_FINISHED);
@@ -88,10 +90,10 @@ export function makePushPullAsyncIterableIterator<
   };
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const originalThrow = asyncIterableIterator.throw!.bind(
-    asyncIterableIterator
-  );
-  asyncIterableIterator.throw = (err): Promise<IteratorResult<T, void>> => {
+  const originalThrow = asyncIterableIterator.throw.bind(asyncIterableIterator);
+  asyncIterableIterator.throw = (
+    err: unknown
+  ): Promise<IteratorResult<T, void>> => {
     isRunning = false;
     finishedD.resolve(err);
     return originalThrow(err);
