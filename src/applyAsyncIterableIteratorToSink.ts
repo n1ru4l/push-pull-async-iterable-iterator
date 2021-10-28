@@ -14,7 +14,7 @@ export function applyAsyncIterableIteratorToSink<
       }
       sink.complete();
     } catch (err) {
-      sink.error(err);
+      sink.error(err as TError);
     }
   };
   run();
