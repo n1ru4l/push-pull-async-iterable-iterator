@@ -2104,7 +2104,7 @@ colord@^2.0.1:
   resolved "https://registry.yarnpkg.com/colord/-/colord-2.1.0.tgz#28cd9d6ac874dff97ef5ec1432c5c0b4e58e49c7"
   integrity sha512-H5sDP9XDk2uP+x/xSGkgB9SEFc1bojdI5DMKU0jmSXQtml2GIe48dj1DcSS0e53QQAHn+JKqUXbGeGX24xWD7w==
 
-colorette@^1.2.2, colorette@^1.3.0, colorette@^1.4.0:
+colorette@^1.2.2, colorette@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-1.4.0.tgz#5190fbb87276259a86ad700bff2c6d6faa3fca40"
   integrity sha512-Y2oEozpomLn7Q3HFP7dpww7AtMJplbM9lGZP6RDfHqmbeRjiwRg4n6VM6j4KLmRke85uWEI7JqF17f3pqdRA0g==
@@ -4835,13 +4835,6 @@ merge2@^1.3.0:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
-mico-spinner@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/mico-spinner/-/mico-spinner-1.2.2.tgz#0f00cbf45c81b58fbd7d0a7bb2dea8546867d413"
-  integrity sha512-jIsOIIk5xa+TmZJU2mPVTEk1AC7aKnrj8UJR58cTiK8msNWYvPuQxPx0ojNbtVOut/TjTgGkVLrEt1jsrceYfA==
-  dependencies:
-    colorette "^1.2.2"
-
 micromatch@^3.1.10, micromatch@^3.1.4:
   version "3.1.10"
   resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-3.1.10.tgz#70859bc95c9840952f359a068a3fc49f9ecfac23"
@@ -5024,6 +5017,13 @@ nanomatch@^1.2.9:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
+
+nanospinner@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/nanospinner/-/nanospinner-0.4.0.tgz#f544f71fb990423528b8f6dd6c26134cf9f21659"
+  integrity sha512-FhxiB9PcEztMw6XfQDSLJBMlmN4n7B2hl/oiK4Hy9479r1+df0i2099DgcEx+m6yBfBJVUuKpILvP8fM3rK3Sw==
+  dependencies:
+    picocolors "^1.0.0"
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -5451,6 +5451,11 @@ pbkdf2@^3.0.3:
     ripemd160 "^2.0.1"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
+
+picocolors@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/picocolors/-/picocolors-1.0.0.tgz#cb5bdc74ff3f51892236eaf79d68bc44564ab81c"
+  integrity sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==
 
 picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.2, picomatch@^2.2.3:
   version "2.3.0"
@@ -6329,18 +6334,18 @@ sisteransi@^1.0.5:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
-size-limit@5.0.3:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/size-limit/-/size-limit-5.0.3.tgz#de4d4e9366274bd7987673ae76d51af02f57089b"
-  integrity sha512-522c33FTs09sDCN3SUjtxF3Jg361O8Xm1Rh9MUuGGVwY7XGvroE/vL20+//qGltUprGzYQONBbzy9TTdOJWgbw==
+size-limit@6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/size-limit/-/size-limit-6.0.4.tgz#f3345206d8c25485d0d31ea41622761a3a1aad93"
+  integrity sha512-zo/9FrXzetvZGFJnd1LC4mR9GvirElALlerMY3EOwEGdW7Lwgl2WT0hTRC2559ZR2PGfRpnXEgAFkayGAJOebg==
   dependencies:
     bytes-iec "^3.1.1"
     chokidar "^3.5.2"
     ci-job-number "^1.2.2"
-    colorette "^1.3.0"
     globby "^11.0.4"
     lilconfig "^2.0.3"
-    mico-spinner "^1.2.2"
+    nanospinner "^0.4.0"
+    picocolors "^1.0.0"
 
 slash@^2.0.0:
   version "2.0.0"
