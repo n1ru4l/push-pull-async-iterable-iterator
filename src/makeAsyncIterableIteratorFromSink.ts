@@ -1,3 +1,4 @@
+import { withHandlers } from "./withHandlers";
 import { makePushPullAsyncIterableIterator } from "./makePushPullAsyncIterableIterator";
 import { Sink } from "./Sink";
 
@@ -7,32 +8,20 @@ export const makeAsyncIterableIteratorFromSink = <
 >(
   make: (sink: Sink<TValue, TError>) => () => void
 ): AsyncIterableIterator<TValue> => {
-  const {
-    pushValue,
-    asyncIterableIterator
-  } = makePushPullAsyncIterableIterator<TValue>();
+  const source = makePushPullAsyncIterableIterator<TValue>();
   const dispose = make({
-    next: (value: TValue) => {
-      pushValue(value);
+    next(value: TValue) {
+      source.push(value);
     },
-    complete: () => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      asyncIterableIterator.return!();
+    complete() {
+      source.return();
     },
-    error: (err: TError) => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      asyncIterableIterator.throw!(err);
+    error(err: TError) {
+      source.throw(err);
     }
   });
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const originalReturn = asyncIterableIterator.return!;
-  let returnValue: ReturnType<typeof originalReturn> | undefined = undefined;
-  asyncIterableIterator.return = () => {
-    if (returnValue === undefined) {
-      dispose();
-      returnValue = originalReturn();
-    }
-    return returnValue;
-  };
-  return asyncIterableIterator;
+
+  return withHandlers(source, () => {
+    dispose();
+  });
 };

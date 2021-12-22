@@ -1,14 +1,10 @@
 export function isAsyncIterable(
   input: unknown
-): input is AsyncIterator<unknown> | AsyncIterableIterator<unknown> {
+): input is
+  | AsyncIterator<unknown>
+  | AsyncIterableIterator<unknown>
+  | AsyncGenerator {
   return (
-    typeof input === "object" &&
-    input !== null &&
-    // The AsyncGenerator check is for Safari on iOS which currently does not have
-    // Symbol.asyncIterator implemented
-    // That means every custom AsyncIterable must be built using a AsyncGeneratorFunction (async function * () {})
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ((input as any)[Symbol.toStringTag] === "AsyncGenerator" ||
-      (Symbol.asyncIterator && Symbol.asyncIterator in input))
+    typeof input === "object" && input !== null && Symbol.asyncIterator in input
   );
 }

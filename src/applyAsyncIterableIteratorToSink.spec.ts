@@ -10,15 +10,9 @@ it("'applyAsyncIterableIteratorToSink' exists", () => {
 
 it("can be created", done => {
   // In the real-world you would create this iterator inside Observable constructor function.
-  const {
-    pushValue,
-    asyncIterableIterator
-  } = makePushPullAsyncIterableIterator();
+  const source = makePushPullAsyncIterableIterator();
   const observable = new Observable(sink => {
-    const dispose = applyAsyncIterableIteratorToSink(
-      asyncIterableIterator,
-      sink
-    );
+    const dispose = applyAsyncIterableIteratorToSink(source, sink);
     return dispose;
   });
 
@@ -37,10 +31,8 @@ it("can be created", done => {
     }
   });
 
-  pushValue(1);
-  pushValue(2);
-  pushValue(3);
-  process.nextTick(() => {
-    asyncIterableIterator.return?.();
-  });
+  source.push(1);
+  source.push(2);
+  source.push(3);
+  source.return();
 });

@@ -10,25 +10,27 @@ export function withHandlers<TValue, TError = unknown>(
   onReturn?: () => void,
   onThrow?: (err: TError) => void
 ): AsyncGenerator<TValue, void, unknown> {
-  const stream = (async function* withReturnSource() {
-    yield* source;
-  })();
-  const originalReturn = stream.return.bind(stream);
-
-  if (onReturn) {
-    stream.return = (...args) => {
-      onReturn();
-      return originalReturn(...args);
-    };
-  }
-
-  if (onThrow) {
-    const originalThrow = stream.throw.bind(stream);
-    stream.throw = (err: TError) => {
-      onThrow(err);
-      return originalThrow(err);
-    };
-  }
+  const asyncIterator = source[Symbol.asyncIterator]();
+  const stream: AsyncGenerator<TValue, void, unknown> = {
+    [Symbol.asyncIterator]() {
+      return stream;
+    },
+    next: asyncIterator.next.bind(asyncIterator),
+    return(...args) {
+      onReturn?.();
+      return (
+        asyncIterator.return?.(...args) ??
+        Promise.resolve({ done: true, value: undefined })
+      );
+    },
+    throw(err) {
+      onThrow?.(err);
+      return (
+        asyncIterator.throw?.(err) ??
+        Promise.resolve({ done: true, value: undefined })
+      );
+    }
+  };
 
   return stream;
 }
