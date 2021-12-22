@@ -1,5 +1,12 @@
 # @n1ru4l/push-pull-async-iterable-iterator
 
+## 3.2.0
+
+### Minor Changes
+
+- 2d1d87d: Add operators `filter` and `map`
+- 2d1d87d: Add helpers `withHandlers` and `withHandlersFrom`
+
 ## 3.1.0
 
 ### Minor Changes
