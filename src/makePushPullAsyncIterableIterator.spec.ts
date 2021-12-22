@@ -47,6 +47,6 @@ it("can throw errors", async () => {
     await nextP;
     fail("should throw");
   } catch (err) {
-    expect(err.message).toEqual("Something got thrown.");
+    expect((err as Error).message).toEqual("Something got thrown.");
   }
 });

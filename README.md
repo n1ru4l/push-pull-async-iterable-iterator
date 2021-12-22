@@ -152,3 +152,77 @@ export const execute = (request: RequestParameters, variables: Variables) => {
   });
 };
 ```
+
+## Operators
+
+This package also ships a few utilities that make your life easier!
+
+### `map`
+
+Map a source
+
+```ts
+import { map } from "@n1ru4l/push-pull-async-iterable-iterator";
+
+async function* source() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+
+const square = map((value: number): number => value * value);
+
+for await (const value of square(source())) {
+  console.log(value);
+}
+// logs 1, 4, 9
+```
+
+### `filter`
+
+Filter a source
+
+```ts
+import { filter } from "@n1ru4l/push-pull-async-iterable-iterator";
+
+async function* source() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+
+const biggerThan1 = filter((value: number): number => value > 1);
+
+for await (const value of biggerThan1(source())) {
+  console.log(value);
+}
+// logs 2, 3
+```
+
+## Other helpers
+
+### `withHandlers`
+
+Attach a return and throw handler to a source.
+
+```ts
+import { withReturn } from "@n1ru4l/push-pull-async-iterable-iterator";
+
+async function* source() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+
+const sourceInstance = source();
+
+const newSourceWithHandlers = withHandlers(
+  sourceInstance,
+  () => sourceInstance.return(),
+  err => sourceInstance.throw(err)
+);
+
+for await (const value of stream) {
+  // ...
+}
+```
