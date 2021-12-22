@@ -7,7 +7,7 @@
  */
 export function withHandlers<TValue, TError = unknown>(
   source: AsyncIterable<TValue>,
-  onReturn: () => void,
+  onReturn?: () => void,
   onThrow?: (err: TError) => void
 ): AsyncGenerator<TValue, void, unknown> {
   const stream = (async function* withReturnSource() {
@@ -15,10 +15,12 @@ export function withHandlers<TValue, TError = unknown>(
   })();
   const originalReturn = stream.return.bind(stream);
 
-  stream.return = (...args) => {
-    onReturn();
-    return originalReturn(...args);
-  };
+  if (onReturn) {
+    stream.return = (...args) => {
+      onReturn();
+      return originalReturn(...args);
+    };
+  }
 
   if (onThrow) {
     const originalThrow = stream.throw.bind(stream);
