@@ -1,10 +1,12 @@
-type Deferred<T> = {
+import { withHandlers } from "./withHandlers";
+
+type Deferred<T = void> = {
   resolve: (value: T) => void;
   reject: (value: unknown) => void;
   promise: Promise<T>;
 };
 
-function createDeferred<T>(): Deferred<T> {
+function createDeferred<T = void>(): Deferred<T> {
   const d = {} as Deferred<T>;
   d.promise = new Promise<T>((resolve, reject) => {
     d.resolve = resolve;
@@ -20,8 +22,26 @@ export type PushPullAsyncIterableIterator<T> = {
   asyncIterableIterator: AsyncGenerator<T, void>;
 };
 
-const SYMBOL_FINISHED = Symbol();
-const SYMBOL_NEW_VALUE = Symbol();
+const enum StateType {
+  running = "running",
+  error = "error",
+  finished = "finished"
+}
+
+type RunningState = {
+  type: StateType.running;
+};
+
+type ErrorState = {
+  type: StateType.error;
+  error: unknown;
+};
+
+type FinishedState = {
+  type: StateType.finished;
+};
+
+type State = RunningState | ErrorState | FinishedState;
 
 /**
  * makePushPullAsyncIterableIterator
@@ -33,13 +53,23 @@ const SYMBOL_NEW_VALUE = Symbol();
 export function makePushPullAsyncIterableIterator<
   T
 >(): PushPullAsyncIterableIterator<T> {
-  let isRunning = true;
+  let state = {
+    type: StateType.running
+  } as State;
+  let next = createDeferred();
   const values: Array<T> = [];
 
-  let newValueD = createDeferred<typeof SYMBOL_NEW_VALUE>();
-  const finishedD = createDeferred<typeof SYMBOL_FINISHED | unknown>();
+  function pushValue(value: T) {
+    if (state.type !== StateType.running) {
+      return;
+    }
 
-  const asyncIterableIterator = (async function* PushPullAsyncIterableIterator(): AsyncGenerator<
+    values.push(value);
+    next.resolve();
+    next = createDeferred();
+  }
+
+  const source = (async function* PushPullAsyncIterableIterator(): AsyncGenerator<
     T,
     void
   > {
@@ -48,59 +78,42 @@ export function makePushPullAsyncIterableIterator<
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         yield values.shift()!;
       } else {
-        const result = await Promise.race([
-          newValueD.promise,
-          finishedD.promise
-        ]);
-
-        if (result === SYMBOL_FINISHED) {
-          break;
+        if (state.type === StateType.error) {
+          throw state.error;
         }
-        if (result !== SYMBOL_NEW_VALUE) {
-          throw result;
+        if (state.type === StateType.finished) {
+          return;
         }
+        await next.promise;
       }
     }
   })();
 
-  function pushValue(value: T) {
-    if (isRunning === false) {
-      // TODO: Should this throw?
-      return;
+  const stream = withHandlers(
+    source,
+    () => {
+      if (state.type !== StateType.running) {
+        return;
+      }
+      state = {
+        type: StateType.finished
+      };
+      next.resolve();
+    },
+    (error: unknown) => {
+      if (state.type !== StateType.running) {
+        return;
+      }
+      state = {
+        type: StateType.error,
+        error
+      };
+      next.resolve();
     }
-
-    values.push(value);
-    newValueD.resolve(SYMBOL_NEW_VALUE);
-    newValueD = createDeferred();
-  }
-
-  // We monkey patch the original generator for clean-up
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const originalReturn = asyncIterableIterator.return.bind(
-    asyncIterableIterator
   );
-
-  asyncIterableIterator.return = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...args: any[]
-  ): Promise<IteratorResult<T, void>> => {
-    isRunning = false;
-    finishedD.resolve(SYMBOL_FINISHED);
-    return originalReturn(...args);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const originalThrow = asyncIterableIterator.throw.bind(asyncIterableIterator);
-  asyncIterableIterator.throw = (
-    err: unknown
-  ): Promise<IteratorResult<T, void>> => {
-    isRunning = false;
-    finishedD.resolve(err);
-    return originalThrow(err);
-  };
 
   return {
     pushValue,
-    asyncIterableIterator
+    asyncIterableIterator: stream
   };
 }
